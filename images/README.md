@@ -1,20 +1,17 @@
-# Images attendues
+# Images
 
-`StreamFlix.zip` n'a pas été trouvé sur le disque, donc ce dossier ne contient
-pour l'instant que sa structure. Décompressez le zip fourni et placez les
-fichiers ici avec exactement ces noms (déjà référencés dans `index.html`) :
+Les affiches d'origine sont dans `../StreamFlix/`. Les fichiers de ce dossier en
+sont dérivés (recadrage 2:3, redimensionnement) pour servir des images
+responsives via `<picture>` + `srcset` :
 
 ```
 images/
-├── logo.png
-├── hero-bg.jpg
+├── logo.svg / favicon.svg
+├── hero-bg-768.(webp|jpg)    fond flouté du hero (Inception)
+├── hero-bg-1280.(webp|jpg)
 └── films/
-    ├── inception.jpg
-    ├── interstellar.jpg
-    ├── dark-knight.jpg
-    ├── pulp-fiction.jpg
-    ├── matrix.jpg
-    └── forrest-gump.jpg
+    └── <film>-200.(webp|jpg), <film>-400.(webp|jpg)
 ```
 
-Aucune autre modification du HTML n'est nécessaire une fois les images en place.
+Le navigateur choisit le WebP s'il le supporte, sinon le JPG, et la largeur
+adaptée à l'écran (200w ou 400w) grâce à l'attribut `sizes`.

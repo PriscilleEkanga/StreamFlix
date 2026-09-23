@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +9,32 @@
   <meta name="keywords" content="streaming, films, séries, StreamFlix, VOD, cinéma en ligne">
   <meta name="author" content="StreamFlix">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0b0b0f">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="StreamFlix – Films et séries en streaming illimité">
   <meta property="og:description" content="Regardez des milliers de films et séries en streaming illimité sur StreamFlix.">
-  <meta property="og:image" content="images/hero-bg.jpg">
+  <meta property="og:image" content="images/hero-bg-1280.jpg">
   <meta property="og:locale" content="fr_FR">
 
-  <link rel="icon" href="images/logo.png" type="image/png">
+  <!-- Thème : appliqué avant le premier rendu pour éviter un flash du thème par défaut -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        var saved = localStorage.getItem('streamflix-theme');
+        if (saved === 'dark' || saved === 'light' || saved === 'sepia') {
+          root.setAttribute('data-theme', saved);
+        }
+      } catch (e) { /* stockage indisponible : on garde le thème sombre */ }
+    })();
+  </script>
+
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -26,19 +44,19 @@
   <header class="site-header">
     <div class="header-container">
 
-      <a href="/" class="logo" aria-label="StreamFlix – Retour à l'accueil">
-        <img src="images/logo.png" alt="StreamFlix" width="150" height="40">
+      <a href="#main-content" class="logo" aria-label="StreamFlix – Retour à l'accueil">
+        <img src="images/logo.svg" alt="StreamFlix" width="150" height="40">
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
         <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="main-menu">
           <span class="sr-only">Ouvrir le menu de navigation</span>
-          <span aria-hidden="true">&#9776;</span>
+          <span class="nav-toggle-icon" aria-hidden="true"></span>
         </button>
         <ul id="main-menu" class="nav-list">
-          <li><a href="#main-content" aria-current="page">Accueil</a></li>
+          <li><a href="#main-content" aria-current="true">Accueil</a></li>
           <li><a href="#films">Films</a></li>
-          <li><a href="#films">Séries</a></li>
+          <li><a href="#catalogue">Séries</a></li>
           <li><a href="#inscription">Ma Liste</a></li>
         </ul>
       </nav>
@@ -48,14 +66,24 @@
           <label for="search-input" class="sr-only">Rechercher un film ou une série</label>
           <input type="search" id="search-input" name="q" placeholder="Rechercher..." autocomplete="off">
           <button type="submit" aria-label="Lancer la recherche">
-            <span aria-hidden="true">&#128269;</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </form>
+
+        <fieldset class="theme-switcher">
+          <legend class="sr-only">Thème de l'interface</legend>
+          <input type="radio" id="theme-dark" name="theme" value="dark" checked>
+          <label for="theme-dark" title="Thème sombre"><span class="sr-only">Sombre</span></label>
+          <input type="radio" id="theme-light" name="theme" value="light">
+          <label for="theme-light" title="Thème clair"><span class="sr-only">Clair</span></label>
+          <input type="radio" id="theme-sepia" name="theme" value="sepia">
+          <label for="theme-sepia" title="Thème cinéma sépia"><span class="sr-only">Cinéma sépia</span></label>
+        </fieldset>
 
         <nav class="profile-menu" aria-label="Menu du profil utilisateur">
           <details class="profile-dropdown">
             <summary>
-              <span aria-hidden="true">&#128100;</span>
+              <span class="avatar" aria-hidden="true">P</span>
               <span class="sr-only">Ouvrir le menu du profil</span>
             </summary>
             <ul>
@@ -68,53 +96,80 @@
       </div>
 
     </div>
+
+    <!-- Fil d'Ariane : complété automatiquement par script.js selon la section visible -->
+    <nav class="breadcrumb" aria-label="Fil d'Ariane">
+      <ol id="breadcrumb-list">
+        <li><a href="#main-content">StreamFlix</a></li>
+        <li><span aria-current="location">Accueil</span></li>
+      </ol>
+    </nav>
   </header>
 
   <main id="main-content">
 
-    <section class="hero" aria-label="Film à la une : Inception">
-      <img class="hero-bg-image" src="images/hero-bg.jpg" alt="">
-      <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="hero-content">
-        <h1>Inception</h1>
-        <p class="hero-meta">
-          <span class="movie-year">2010</span>
-          <span aria-hidden="true">&middot;</span>
-          <span class="movie-duration">2h28</span>
-          <span aria-hidden="true">&middot;</span>
-          <span class="movie-rating" aria-label="Note : 4,5 sur 5">4.5/5</span>
-          <span aria-hidden="true">&middot;</span>
-          <span class="movie-genres">Sci-Fi, Thriller</span>
-        </p>
-        <p class="hero-description">Un voleur qui s'infiltre dans les rêves des autres pour voler leurs secrets découvre qu'il doit réaliser l'impossible : planter une idée plutôt que de la voler.</p>
-        <div class="hero-actions">
-          <button type="button" class="btn btn-primary">
-            <span aria-hidden="true">&#9654;</span> Lecture
-          </button>
-          <button type="button" class="btn btn-secondary" aria-haspopup="dialog">
-            <span aria-hidden="true">&#8505;</span> Plus d'infos
-          </button>
-          <button type="button" class="btn btn-tertiary" aria-pressed="false">
-            <span aria-hidden="true">+</span> Ma Liste
-          </button>
+    <section class="hero" aria-label="Film à la une : Inception" data-nav="#main-content" data-crumb="À la une">
+      <!-- Couches décoratives du parallax (vitesses différentes) -->
+      <div class="hero-layers" aria-hidden="true">
+        <picture class="hero-layer hero-layer--bg">
+          <source type="image/webp" srcset="images/hero-bg-768.webp 768w, images/hero-bg-1280.webp 1280w" sizes="100vw">
+          <img class="hero-bg-image" src="images/hero-bg-1280.jpg" srcset="images/hero-bg-768.jpg 768w, images/hero-bg-1280.jpg 1280w" sizes="100vw" alt="" width="1280" height="720" fetchpriority="high">
+        </picture>
+        <div class="hero-layer hero-layer--glow"></div>
+        <div class="hero-layer hero-overlay"></div>
+      </div>
+
+      <div class="hero-inner">
+        <div class="hero-content">
+          <p class="hero-kicker">Film à la une</p>
+          <h1>Inception</h1>
+          <p class="hero-meta">
+            <span class="movie-year">2010</span>
+            <span aria-hidden="true">&middot;</span>
+            <span class="movie-duration">2h28</span>
+            <span aria-hidden="true">&middot;</span>
+            <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
+            <span aria-hidden="true">&middot;</span>
+            <span class="movie-genres">Sci-Fi, Thriller</span>
+          </p>
+          <p class="hero-description">Un voleur qui s'infiltre dans les rêves des autres pour voler leurs secrets découvre qu'il doit réaliser l'impossible : planter une idée plutôt que de la voler.</p>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-primary">
+              <span aria-hidden="true">&#9654;</span> Lecture
+            </button>
+            <button type="button" class="btn btn-secondary">
+              <span aria-hidden="true">&#8505;</span> Plus d'infos
+            </button>
+            <button type="button" class="btn btn-tertiary" aria-pressed="false">
+              <span class="btn-icon" aria-hidden="true">+</span> Ma Liste
+            </button>
+          </div>
         </div>
+
+        <picture class="hero-poster">
+          <source type="image/webp" srcset="images/films/inception-400.webp">
+          <img src="images/films/inception-400.jpg" alt="Affiche du film Inception" width="400" height="600">
+        </picture>
       </div>
     </section>
 
-    <section class="movie-section" id="films" aria-labelledby="trending-heading">
+    <section class="movie-section" id="films" aria-labelledby="trending-heading" data-nav="#films" data-crumb="Films">
       <h2 id="trending-heading">Tendances actuelles</h2>
       <ul class="movie-grid">
 
         <li>
           <article class="movie-card" aria-labelledby="trending-dark-knight-title">
             <a href="#" class="movie-link">
-              <img src="images/films/dark-knight.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/dark-knight-200.webp 200w, images/films/dark-knight-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/dark-knight-400.jpg" srcset="images/films/dark-knight-200.jpg 200w, images/films/dark-knight-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="trending-dark-knight-title">The Dark Knight</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2008</span>
                   <span class="movie-duration">2h32</span>
-                  <span class="movie-rating" aria-label="Note : 4,8 sur 5">4.8/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.8/5</span>
                 </p>
                 <p class="movie-genres">Action, Crime, Drama</p>
               </div>
@@ -125,13 +180,16 @@
         <li>
           <article class="movie-card" aria-labelledby="trending-interstellar-title">
             <a href="#" class="movie-link">
-              <img src="images/films/interstellar.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/interstellar-200.webp 200w, images/films/interstellar-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/interstellar-400.jpg" srcset="images/films/interstellar-200.jpg 200w, images/films/interstellar-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="trending-interstellar-title">Interstellar</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2014</span>
                   <span class="movie-duration">2h49</span>
-                  <span class="movie-rating" aria-label="Note : 4,7 sur 5">4.7/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.7/5</span>
                 </p>
                 <p class="movie-genres">Sci-Fi, Drama</p>
               </div>
@@ -142,13 +200,16 @@
         <li>
           <article class="movie-card" aria-labelledby="trending-pulp-fiction-title">
             <a href="#" class="movie-link">
-              <img src="images/films/pulp-fiction.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/pulp-fiction-200.webp 200w, images/films/pulp-fiction-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/pulp-fiction-400.jpg" srcset="images/films/pulp-fiction-200.jpg 200w, images/films/pulp-fiction-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="trending-pulp-fiction-title">Pulp Fiction</h3>
                 <p class="movie-meta">
                   <span class="movie-year">1994</span>
                   <span class="movie-duration">2h34</span>
-                  <span class="movie-rating" aria-label="Note : 4,6 sur 5">4.6/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.6/5</span>
                 </p>
                 <p class="movie-genres">Crime, Drama</p>
               </div>
@@ -159,20 +220,23 @@
       </ul>
     </section>
 
-    <section class="movie-section" aria-labelledby="recommended-heading">
+    <section class="movie-section" aria-labelledby="recommended-heading" data-nav="#films" data-crumb="Films">
       <h2 id="recommended-heading">Recommandés pour vous</h2>
       <ul class="movie-grid">
 
         <li>
           <article class="movie-card" aria-labelledby="recommended-inception-title">
             <a href="#" class="movie-link">
-              <img src="images/films/inception.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/inception-200.webp 200w, images/films/inception-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/inception-400.jpg" srcset="images/films/inception-200.jpg 200w, images/films/inception-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="recommended-inception-title">Inception</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2010</span>
                   <span class="movie-duration">2h28</span>
-                  <span class="movie-rating" aria-label="Note : 4,5 sur 5">4.5/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
                 </p>
                 <p class="movie-genres">Sci-Fi, Thriller</p>
               </div>
@@ -183,13 +247,16 @@
         <li>
           <article class="movie-card" aria-labelledby="recommended-matrix-title">
             <a href="#" class="movie-link">
-              <img src="images/films/matrix.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/matrix-200.webp 200w, images/films/matrix-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/matrix-400.jpg" srcset="images/films/matrix-200.jpg 200w, images/films/matrix-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="recommended-matrix-title">The Matrix</h3>
                 <p class="movie-meta">
                   <span class="movie-year">1999</span>
                   <span class="movie-duration">2h16</span>
-                  <span class="movie-rating" aria-label="Note : 4,5 sur 5">4.5/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
                 </p>
                 <p class="movie-genres">Action, Sci-Fi</p>
               </div>
@@ -200,13 +267,16 @@
         <li>
           <article class="movie-card" aria-labelledby="recommended-forrest-gump-title">
             <a href="#" class="movie-link">
-              <img src="images/films/forrest-gump.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/forrest-gump-200.webp 200w, images/films/forrest-gump-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/forrest-gump-400.jpg" srcset="images/films/forrest-gump-200.jpg 200w, images/films/forrest-gump-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="recommended-forrest-gump-title">Forrest Gump</h3>
                 <p class="movie-meta">
                   <span class="movie-year">1994</span>
                   <span class="movie-duration">2h22</span>
-                  <span class="movie-rating" aria-label="Note : 4,4 sur 5">4.4/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.4/5</span>
                 </p>
                 <p class="movie-genres">Drama, Romance</p>
               </div>
@@ -217,20 +287,23 @@
       </ul>
     </section>
 
-    <section class="movie-section" aria-labelledby="new-releases-heading">
+    <section class="movie-section" aria-labelledby="new-releases-heading" data-nav="#films" data-crumb="Films">
       <h2 id="new-releases-heading">Nouveautés</h2>
       <ul class="movie-grid">
 
         <li>
           <article class="movie-card" aria-labelledby="new-interstellar-title">
             <a href="#" class="movie-link">
-              <img src="images/films/interstellar.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/interstellar-200.webp 200w, images/films/interstellar-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/interstellar-400.jpg" srcset="images/films/interstellar-200.jpg 200w, images/films/interstellar-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="new-interstellar-title">Interstellar</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2014</span>
                   <span class="movie-duration">2h49</span>
-                  <span class="movie-rating" aria-label="Note : 4,7 sur 5">4.7/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.7/5</span>
                 </p>
                 <p class="movie-genres">Sci-Fi, Drama</p>
               </div>
@@ -241,13 +314,16 @@
         <li>
           <article class="movie-card" aria-labelledby="new-dark-knight-title">
             <a href="#" class="movie-link">
-              <img src="images/films/dark-knight.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/dark-knight-200.webp 200w, images/films/dark-knight-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/dark-knight-400.jpg" srcset="images/films/dark-knight-200.jpg 200w, images/films/dark-knight-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="new-dark-knight-title">The Dark Knight</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2008</span>
                   <span class="movie-duration">2h32</span>
-                  <span class="movie-rating" aria-label="Note : 4,8 sur 5">4.8/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.8/5</span>
                 </p>
                 <p class="movie-genres">Action, Crime, Drama</p>
               </div>
@@ -258,13 +334,16 @@
         <li>
           <article class="movie-card" aria-labelledby="new-inception-title">
             <a href="#" class="movie-link">
-              <img src="images/films/inception.jpg" alt="" loading="lazy" width="300" height="450">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/inception-200.webp 200w, images/films/inception-400.webp 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw">
+                <img src="images/films/inception-400.jpg" srcset="images/films/inception-200.jpg 200w, images/films/inception-400.jpg 400w" sizes="(min-width: 80em) 15rem, (min-width: 48em) 22vw, (min-width: 30em) 36vw, 44vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
               <div class="movie-info">
                 <h3 id="new-inception-title">Inception</h3>
                 <p class="movie-meta">
                   <span class="movie-year">2010</span>
                   <span class="movie-duration">2h28</span>
-                  <span class="movie-rating" aria-label="Note : 4,5 sur 5">4.5/5</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
                 </p>
                 <p class="movie-genres">Sci-Fi, Thriller</p>
               </div>
@@ -275,9 +354,174 @@
       </ul>
     </section>
 
-    <section class="signup" id="inscription" aria-labelledby="signup-heading">
-      <h2 id="signup-heading">Rejoignez StreamFlix</h2>
-      <p>Créez votre compte pour accéder à des milliers de films et séries, et retrouver votre liste personnelle.</p>
+    <!-- Catalogue : grille masonry filtrable par onglets (défis 1 et 3) -->
+    <section class="catalogue" id="catalogue" aria-labelledby="catalogue-heading" data-nav="#catalogue" data-crumb="Catalogue">
+      <h2 id="catalogue-heading">Tout le catalogue</h2>
+
+      <div class="tabs" role="tablist" aria-label="Filtrer le catalogue par genre">
+        <button type="button" class="tab" role="tab" id="tab-all" aria-selected="true" aria-controls="catalogue-panel" data-filter="all">Tous</button>
+        <button type="button" class="tab" role="tab" id="tab-action" aria-selected="false" aria-controls="catalogue-panel" data-filter="action" tabindex="-1">Action</button>
+        <button type="button" class="tab" role="tab" id="tab-scifi" aria-selected="false" aria-controls="catalogue-panel" data-filter="sci-fi" tabindex="-1">Sci-Fi</button>
+        <button type="button" class="tab" role="tab" id="tab-drama" aria-selected="false" aria-controls="catalogue-panel" data-filter="drama" tabindex="-1">Drame</button>
+        <button type="button" class="tab" role="tab" id="tab-crime" aria-selected="false" aria-controls="catalogue-panel" data-filter="crime" tabindex="-1">Crime</button>
+      </div>
+
+      <div class="tab-panel" id="catalogue-panel" role="tabpanel" aria-labelledby="tab-all" tabindex="0">
+        <p class="sr-only" id="catalogue-status" aria-live="polite"></p>
+        <ul class="masonry">
+
+          <li class="masonry-item" data-genres="sci-fi thriller">
+            <article class="catalogue-card catalogue-card--tall" aria-labelledby="cat-inception-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/inception-200.webp 200w, images/films/inception-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/inception-400.jpg" srcset="images/films/inception-200.jpg 200w, images/films/inception-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-inception-title">Inception</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">2010</span>
+                  <span class="movie-duration">2h28</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Sci-Fi</li>
+                  <li>Thriller</li>
+                </ul>
+                <p class="catalogue-synopsis">Dom Cobb est un extracteur : il vole les secrets enfouis dans l'inconscient pendant que ses cibles rêvent. Une dernière mission lui promet de retrouver sa vie d'avant, à condition de faire l'inverse de ce qu'il sait faire.</p>
+                <blockquote class="catalogue-quote">
+                  <p>« Le rêve semble réel tant qu'on est dedans. »</p>
+                </blockquote>
+                <p class="catalogue-credit">Réalisé par Christopher Nolan</p>
+              </div>
+            </article>
+          </li>
+
+          <li class="masonry-item" data-genres="action sci-fi">
+            <article class="catalogue-card catalogue-card--square" aria-labelledby="cat-matrix-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/matrix-200.webp 200w, images/films/matrix-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/matrix-400.jpg" srcset="images/films/matrix-200.jpg 200w, images/films/matrix-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-matrix-title">The Matrix</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">1999</span>
+                  <span class="movie-duration">2h16</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.5/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Action</li>
+                  <li>Sci-Fi</li>
+                </ul>
+                <p class="catalogue-synopsis">Un hacker découvre que le monde qu'il connaît n'est qu'une simulation.</p>
+              </div>
+            </article>
+          </li>
+
+          <li class="masonry-item" data-genres="action crime drama">
+            <article class="catalogue-card" aria-labelledby="cat-dark-knight-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/dark-knight-200.webp 200w, images/films/dark-knight-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/dark-knight-400.jpg" srcset="images/films/dark-knight-200.jpg 200w, images/films/dark-knight-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-dark-knight-title">The Dark Knight</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">2008</span>
+                  <span class="movie-duration">2h32</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.8/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Action</li>
+                  <li>Crime</li>
+                  <li>Drama</li>
+                </ul>
+                <p class="catalogue-synopsis">Batman, le lieutenant Gordon et le procureur Harvey Dent s'allient pour démanteler la pègre de Gotham. Mais un criminel imprévisible, le Joker, entraîne la ville dans le chaos.</p>
+                <p class="catalogue-credit">Réalisé par Christopher Nolan</p>
+              </div>
+            </article>
+          </li>
+
+          <li class="masonry-item" data-genres="drama romance">
+            <article class="catalogue-card catalogue-card--wide" aria-labelledby="cat-forrest-gump-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/forrest-gump-200.webp 200w, images/films/forrest-gump-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/forrest-gump-400.jpg" srcset="images/films/forrest-gump-200.jpg 200w, images/films/forrest-gump-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-forrest-gump-title">Forrest Gump</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">1994</span>
+                  <span class="movie-duration">2h22</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.4/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Drama</li>
+                  <li>Romance</li>
+                </ul>
+                <p class="catalogue-synopsis">Assis sur un banc, Forrest raconte sa vie : une traversée de trente ans d'histoire américaine, portée par sa simplicité et son amour pour Jenny.</p>
+                <blockquote class="catalogue-quote">
+                  <p>« La vie, c'est comme une boîte de chocolats : on ne sait jamais sur quoi on va tomber. »</p>
+                </blockquote>
+                <p class="catalogue-credit">Réalisé par Robert Zemeckis</p>
+              </div>
+            </article>
+          </li>
+
+          <li class="masonry-item" data-genres="sci-fi drama">
+            <article class="catalogue-card catalogue-card--tall" aria-labelledby="cat-interstellar-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/interstellar-200.webp 200w, images/films/interstellar-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/interstellar-400.jpg" srcset="images/films/interstellar-200.jpg 200w, images/films/interstellar-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-interstellar-title">Interstellar</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">2014</span>
+                  <span class="movie-duration">2h49</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.7/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Sci-Fi</li>
+                  <li>Drama</li>
+                </ul>
+                <p class="catalogue-synopsis">Alors que la Terre se meurt, un ancien pilote rejoint une expédition qui traverse un trou de ver à la recherche d'une nouvelle planète habitable.</p>
+                <p class="catalogue-credit">Réalisé par Christopher Nolan</p>
+              </div>
+            </article>
+          </li>
+
+          <li class="masonry-item" data-genres="crime drama">
+            <article class="catalogue-card" aria-labelledby="cat-pulp-fiction-title">
+              <picture class="movie-poster">
+                <source type="image/webp" srcset="images/films/pulp-fiction-200.webp 200w, images/films/pulp-fiction-400.webp 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw">
+                <img src="images/films/pulp-fiction-400.jpg" srcset="images/films/pulp-fiction-200.jpg 200w, images/films/pulp-fiction-400.jpg 400w" sizes="(min-width: 64em) 18rem, (min-width: 40em) 45vw, 90vw" alt="" loading="lazy" width="400" height="600">
+              </picture>
+              <div class="catalogue-body">
+                <h3 id="cat-pulp-fiction-title">Pulp Fiction</h3>
+                <p class="movie-meta">
+                  <span class="movie-year">1994</span>
+                  <span class="movie-duration">2h34</span>
+                  <span class="movie-rating"><span class="sr-only">Note : </span>4.6/5</span>
+                </p>
+                <ul class="genre-tags" aria-label="Genres">
+                  <li>Crime</li>
+                  <li>Drama</li>
+                </ul>
+                <p class="catalogue-synopsis">Deux tueurs à gages, un boxeur, la femme d'un gangster et deux braqueurs : des histoires croisées dans le Los Angeles des bas-fonds.</p>
+              </div>
+            </article>
+          </li>
+
+        </ul>
+      </div>
+    </section>
+
+    <section class="signup" id="inscription" aria-labelledby="signup-heading" data-nav="#inscription" data-crumb="Inscription">
+      <div class="signup-intro">
+        <h2 id="signup-heading">Rejoignez StreamFlix</h2>
+        <p>Créez votre compte pour accéder à des milliers de films et séries, et retrouver votre liste personnelle.</p>
+      </div>
 
       <form class="signup-form" action="#" method="post">
         <fieldset>
@@ -319,8 +563,13 @@
   <footer class="site-footer">
     <div class="footer-container">
 
+      <div class="footer-brand">
+        <img src="images/logo.svg" alt="StreamFlix" width="150" height="40" loading="lazy">
+        <p>Films et séries en streaming illimité, où que vous soyez.</p>
+      </div>
+
       <nav aria-label="Liens utiles">
-        <h2 class="sr-only">Liens utiles</h2>
+        <h2 class="footer-title">Liens utiles</h2>
         <ul class="footer-links">
           <li><a href="#aide">Aide</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -330,7 +579,7 @@
       </nav>
 
       <nav aria-label="Réseaux sociaux">
-        <h2 class="sr-only">Suivez-nous</h2>
+        <h2 class="footer-title">Suivez-nous</h2>
         <ul class="social-links">
           <li><a href="#" aria-label="Suivre StreamFlix sur Facebook">Facebook</a></li>
           <li><a href="#" aria-label="Suivre StreamFlix sur Instagram">Instagram</a></li>
