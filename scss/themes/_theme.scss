@@ -4,6 +4,10 @@
 // ses variables CSS (--bs-body-bg, --bs-body-color...) changent selon le
 // mode. script.js bascule l'attribut sur <html> et mémorise le choix.
 // Ce fichier ajoute la transition fluide et quelques réglages par mode.
+//
+// Exercice 6 (JavaScript) : le sujet demande de basculer la classe
+// .dark-theme sur <body>. script.js le fait ET met à jour data-bs-theme
+// sur <html>, car ce sont les couleurs de Bootstrap qui habillent la page.
 // =============================================================================
 
 // Transition des couleurs lors du changement de thème
@@ -11,7 +15,8 @@ body,
 .sf-footer,
 .sf-signup__panel,
 .sf-badge,
-.modal-content {
+.modal-content,
+.sf-no-result {
   transition:
     background-color $theme-transition-duration ease,
     color $theme-transition-duration ease,

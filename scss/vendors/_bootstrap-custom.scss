@@ -62,12 +62,10 @@ $navbar-dark-color: rgba($text-light, 0.75);
 $navbar-dark-hover-color: $text-light;
 $navbar-dark-active-color: $text-light;
 
-// Badges, tooltips, modales
+// Badges, tooltips
 $badge-font-weight: 600;
 $tooltip-bg: $primary-dark;
 $tooltip-color: $text-light;
-$modal-content-border-radius: $card-radius;
-$modal-backdrop-opacity: 0.8;
 
 // Formulaires : anneau de focus rouge
 $input-focus-border-color: $primary-red;
@@ -208,8 +206,6 @@ $utilities: map-remove(
 @import "bootstrap/scss/navbar";
 @import "bootstrap/scss/card";
 @import "bootstrap/scss/badge";
-@import "bootstrap/scss/close";
-@import "bootstrap/scss/modal";
 @import "bootstrap/scss/tooltip";
 @import "bootstrap/scss/helpers";
 

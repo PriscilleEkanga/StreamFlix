@@ -1,0 +1,86 @@
+// =============================================================================
+// COMPONENTS / MODALE (exercice 5 — JavaScript)
+// Structure et règles de base fournies par le sujet, adaptées à la charte :
+// fond qui suit le thème (au lieu de blanc), coins arrondis, animation.
+// La modale est affichée/masquée par script.js (style.display).
+// =============================================================================
+
+.modal {
+  display: none;
+  position: fixed;
+  // 1050 au lieu de 1000 (valeur du sujet) : la navbar fixe de Bootstrap
+  // est à 1030 et passerait sinon au-dessus du fond sombre.
+  z-index: 1050;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; // permet de faire défiler une modale plus haute que l'écran
+  padding: 1rem;
+  background-color: rgba(#000, 0.8);
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+  margin: 10vh auto;
+  padding: 1.5rem;
+  border-radius: $card-radius;
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  box-shadow: $shadow-card;
+  animation: sf-modal-in $transition-duration $ease-out;
+}
+
+// Bouton de fermeture (×)
+.close {
+  float: right;
+  margin: -0.5rem -0.5rem 0 0.5rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: $btn-border-radius;
+  background: none;
+  color: var(--bs-secondary-color);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color $transition-duration ease, background-color $transition-duration ease;
+
+  &:hover {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-body-color);
+  }
+}
+
+// Contenu généré par openModal() : affiche à gauche, infos à droite
+.modal-film {
+  display: flex;
+  gap: 1.25rem;
+
+  &__poster {
+    flex: 0 0 35%;
+    min-width: 0;
+    width: 35%;
+    height: auto;
+    align-self: flex-start;
+    border-radius: $btn-border-radius;
+  }
+
+  &__title {
+    margin-bottom: 0.5rem;
+    font-size: $font-size-large;
+  }
+
+  &__meta {
+    color: var(--bs-secondary-color);
+    font-size: $font-size-small;
+  }
+}
+
+@keyframes sf-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem) scale(0.97);
+  }
+}

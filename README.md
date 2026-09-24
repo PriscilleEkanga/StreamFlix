@@ -9,6 +9,7 @@ Plateforme de streaming, projet fil rouge EFREI.
 | `main`          | Structure HTML sémantique                        |
 | `cssNatif`      | Version en CSS natif (sans framework)            |
 | `bootstrap-sass`| Migration Bootstrap 5.3 + SASS (architecture 7-1)|
+| `javascript`    | J4 : premiers pas en JavaScript (DOM, événements) |
 
 ## Installation et compilation
 
@@ -47,3 +48,14 @@ scss/
 
 Mixins : `respond-to`, `hover-lift`, `overlay-gradient`, `line-clamp`,
 `star-rating`, `button-reset`.
+
+## JavaScript (J4)
+
+`js/script.js` suit la structure demandée, un bloc commenté par exercice :
+
+1. **Afficher/masquer** : bouton « Masquer » au-dessus de chaque rangée (`classList.toggle('hidden')`).
+2. **Compteur** : « Catalogue : X films disponibles » ajouté dans le footer (`createElement` + `appendChild`).
+3. **Film vu** : clic sur une carte → classe `.watched` et badge « ✓ Vu » (le clic sur le titre ou un bouton est ignoré grâce à `event.target`).
+4. **Recherche** : saisie dans `#search` → filtrage par titre, rangées vides masquées, message « Aucun résultat ».
+5. **Modale** : clic sur le titre d'un film (ou « Plus d'infos » du hero) → `openModal()` ; fermeture par ×, clic sur le fond ou Échap.
+6. **Thème** (bonus) : bouton « Mode clair / Mode sombre » → classe `.dark-theme` sur `<body>`, choix mémorisé.

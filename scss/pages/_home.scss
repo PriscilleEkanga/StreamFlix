@@ -54,3 +54,13 @@
     padding: 3rem;
   }
 }
+
+// Exercice 4 (JavaScript) : message quand la recherche ne trouve rien
+.sf-no-result {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid $primary-red;
+  border-radius: $btn-border-radius;
+  background-color: var(--bs-tertiary-bg);
+  font-weight: 600;
+}

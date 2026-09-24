@@ -102,3 +102,28 @@
   color: var(--bs-body-color);
   font-weight: 500;
 }
+
+// ---- Exercice 3 (JavaScript) : film marqué comme "vu" ------------------------
+// La classe .watched est ajoutée/retirée par script.js au clic sur la carte.
+.sf-movie-card {
+  cursor: pointer;
+}
+
+.watched {
+  opacity: 0.6;
+
+  &::after {
+    content: "✓ Vu";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #2e7d32; // vert assez foncé pour un texte blanc lisible
+    color: $text-light;
+    font-size: $font-size-small;
+    font-weight: 700;
+    animation: sf-modal-in $transition-duration $ease-out;
+  }
+}

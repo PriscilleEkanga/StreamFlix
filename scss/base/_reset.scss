@@ -67,3 +67,9 @@ a:focus-visible,
     padding-inline: 3.5rem;
   }
 }
+
+// Exercice 1 (JavaScript) : section masquée.
+// !important pour l'emporter sur les classes d'affichage de Bootstrap (.d-flex...)
+.hidden {
+  display: none !important;
+}
