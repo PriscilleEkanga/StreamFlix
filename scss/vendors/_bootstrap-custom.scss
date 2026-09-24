@@ -1,0 +1,217 @@
+// =============================================================================
+// VENDORS / BOOTSTRAP PERSONNALISÉ
+// -----------------------------------------------------------------------------
+// Bootstrap est compilé depuis ses sources SASS (node_modules/bootstrap/scss)
+// pour deux raisons :
+//   1. Personnaliser ses variables avec la charte StreamFlix (impossible
+//      avec le CSS déjà compilé du CDN).
+//   2. N'importer que les composants utilisés ("tree-shaking" manuel) :
+//      le CSS final est bien plus léger que bootstrap.min.css (~230 Ko).
+// Le JavaScript de Bootstrap, lui, est chargé depuis le CDN jsDelivr.
+// =============================================================================
+
+// 1. Fonctions (nécessaires pour manipuler les couleurs dans les variables)
+@import "bootstrap/scss/functions";
+
+// -----------------------------------------------------------------------------
+// 2. Variables Bootstrap personnalisées (AVANT l'import des variables)
+// -----------------------------------------------------------------------------
+
+// Couleurs de thème : génèrent .btn-primary, .text-bg-primary, etc.
+$primary: $primary-red;
+$secondary: $secondary-gray;
+$dark: $primary-dark;
+$info: $accent-blue;
+
+// Thème clair (mode par défaut de Bootstrap)
+$body-bg: $bg-light;
+$body-color: $primary-dark;
+$body-tertiary-bg: #ffffff; // cartes blanches sur fond crème
+
+// Thème sombre (activé par data-bs-theme="dark")
+$body-bg-dark: $bg-dark;
+$body-color-dark: $text-light;
+$body-secondary-color-dark: $text-muted;
+$body-tertiary-bg-dark: $bg-dark-elevated;
+$border-color-dark: #333333;
+
+// Typographie
+$font-family-sans-serif: $font-primary;
+$headings-font-weight: $font-weight-title;
+$lead-font-size: $font-size-base * 1.2;
+
+// Liens
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+// Boutons : angles peu arrondis et texte gras, comme sur Netflix
+$btn-font-weight: 700;
+$btn-border-radius: 0.25rem;
+$btn-border-radius-lg: 0.3rem;
+$btn-padding-x-lg: 1.75rem;
+
+// Cartes
+$card-border-width: 0;
+$card-border-radius: $card-radius;
+$card-spacer-x: 1rem;
+$card-spacer-y: 0.875rem;
+
+// Navbar
+$navbar-padding-y: 0.75rem;
+$navbar-dark-color: rgba($text-light, 0.75);
+$navbar-dark-hover-color: $text-light;
+$navbar-dark-active-color: $text-light;
+
+// Badges, tooltips, modales
+$badge-font-weight: 600;
+$tooltip-bg: $primary-dark;
+$tooltip-color: $text-light;
+$modal-content-border-radius: $card-radius;
+$modal-backdrop-opacity: 0.8;
+
+// Formulaires : anneau de focus rouge
+$input-focus-border-color: $primary-red;
+$input-btn-focus-color: rgba($primary-red, 0.3);
+
+// Conteneur le plus large (écrans ≥ 1400px)
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1440px,
+);
+
+// Pas de dégradés ni d'ombres automatiques sur tous les composants
+$enable-shadows: false;
+$enable-gradients: false;
+
+// -----------------------------------------------------------------------------
+// 3. Variables et maps de Bootstrap
+// -----------------------------------------------------------------------------
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+// Nouveau ratio 2:3 (format affiche de cinéma) → classe .ratio-2x3
+$aspect-ratios: map-merge($aspect-ratios, ("2x3": calc(3 / 2 * 100%)));
+
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// -----------------------------------------------------------------------------
+// 4. API des utilitaires
+// -----------------------------------------------------------------------------
+
+// overflow-x devient responsive : .overflow-x-auto (mobile) puis
+// .overflow-x-sm-visible → les rangées de films défilent sur mobile
+// et s'affichent en grille dès 576px.
+$utilities: map-merge(
+  $utilities,
+  (
+    "overflow-x": map-merge(map-get($utilities, "overflow-x"), (responsive: true)),
+  )
+);
+
+// Marges et paddings non responsives : leurs variantes .mb-lg-0, .px-md-5...
+// déclinées sur 6 points de rupture pèsent plus de 30 Ko. Les rares cas
+// responsives sont gérés dans nos propres partials avec respond-to().
+@each $key in ("margin", "margin-x", "margin-y", "margin-top", "margin-end", "margin-bottom", "margin-start", "padding", "padding-x", "padding-y", "padding-top", "padding-end", "padding-bottom", "padding-start") {
+  $utilities: map-merge($utilities, ($key: map-merge(map-get($utilities, $key), (responsive: false))));
+}
+
+// display : seulement les valeurs utilisées, pas de variantes d'impression
+$utilities: map-merge(
+  $utilities,
+  (
+    "display": map-merge(map-get($utilities, "display"), (values: none block flex inline-flex, print: false)),
+  )
+);
+
+// Suppression des utilitaires inutilisés (allège le CSS final)
+$utilities: map-remove(
+  $utilities,
+  "align",
+  "float",
+  "user-select",
+  "pointer-events",
+  "font-family",
+  "link-opacity",
+  "link-offset",
+  "link-underline",
+  "link-underline-opacity",
+  "column-gap",
+  "row-gap",
+  "order",
+  "overflow-y",
+  "viewport-height",
+  "min-viewport-height",
+  "viewport-width",
+  "min-viewport-width",
+  "text-opacity",
+  "bg-opacity",
+  "border-opacity",
+  "subtle-background-color",
+  "subtle-border-color",
+  "rounded-top",
+  "rounded-end",
+  "rounded-bottom",
+  "rounded-start",
+  "z-index",
+  "opacity",
+  "shadow",
+  "focus-ring",
+  "position",
+  "top",
+  "bottom",
+  "start",
+  "end",
+  "translate-middle",
+  "object-fit",
+  "border-end",
+  "border-bottom",
+  "border-start",
+  "border-color",
+  "border-width",
+  "max-width",
+  "max-height",
+  "flex-fill",
+  "flex-grow",
+  "flex-shrink",
+  "align-content",
+  "align-self",
+  "text-align",
+  "white-space",
+  "word-wrap",
+  "font-style",
+  "line-height",
+  "background-color",
+  "gradient",
+  "visibility",
+  "overflow"
+);
+
+// -----------------------------------------------------------------------------
+// 5. Composants importés (uniquement ceux utilisés par StreamFlix)
+// -----------------------------------------------------------------------------
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/helpers";
+
+// 6. Génération des classes utilitaires (toujours en dernier)
+@import "bootstrap/scss/utilities/api";

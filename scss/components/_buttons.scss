@@ -1,0 +1,90 @@
+// =============================================================================
+// COMPONENTS / BOUTONS
+// Deux variantes StreamFlix créées avec le mixin button-variant() de
+// Bootstrap : il génère automatiquement les états hover, focus, active
+// et disabled à partir des couleurs fournies.
+// =============================================================================
+
+// Léger enfoncement au clic sur tous les boutons
+.btn {
+  transition:
+    $btn-transition,
+    transform 0.15s $ease-out;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Bouton "Lecture" : blanc, texte noir (signature Netflix)
+.btn-play {
+  @include button-variant(
+    $background: $text-light,
+    $border: $text-light,
+    $color: #000,
+    $hover-background: rgba($text-light, 0.8),
+    $hover-border: rgba($text-light, 0.8),
+    $hover-color: #000,
+    $active-background: rgba($text-light, 0.7),
+    $active-border: rgba($text-light, 0.7),
+    $active-color: #000
+  );
+}
+
+// Bouton "Plus d'infos" : gris translucide sur l'image
+.btn-glass {
+  @include button-variant(
+    $background: rgba($secondary-gray, 0.7),
+    $border: transparent,
+    $color: $text-light,
+    $hover-background: rgba($secondary-gray, 0.45),
+    $hover-border: transparent,
+    $hover-color: $text-light,
+    $active-background: rgba($secondary-gray, 0.35),
+    $active-border: transparent,
+    $active-color: $text-light
+  );
+  backdrop-filter: blur(6px);
+}
+
+// Bouton rond "+" (ajout à Ma Liste)
+.btn-circle {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+// État "dans ma liste" (aria-pressed géré par script.js)
+.sf-list-toggle {
+  .sf-list-icon {
+    display: inline-block;
+    transition: transform $transition-duration $ease-out;
+  }
+
+  &[aria-pressed="true"] {
+    border-color: $primary-red;
+    background-color: rgba($primary-red, 0.15);
+
+    .sf-list-icon {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// Bouton "fantôme" qui suit le thème (texte et bordure = couleur du texte).
+// Bootstrap 5.3 expose les couleurs des boutons en variables CSS (--bs-btn-*) :
+// il suffit de les redéfinir.
+.sf-btn-ghost {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-bg);
+  --bs-btn-hover-bg: var(--bs-body-color);
+  --bs-btn-hover-border-color: var(--bs-body-color);
+  --bs-btn-active-color: var(--bs-body-bg);
+  --bs-btn-active-bg: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--bs-body-color);
+}

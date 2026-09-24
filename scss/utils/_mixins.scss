@@ -1,0 +1,105 @@
+// =============================================================================
+// UTILS / MIXINS — blocs de styles réutilisables
+// Importé après Bootstrap pour pouvoir s'appuyer sur ses propres mixins
+// (media-breakpoint-up) et sur ses points de rupture.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// respond-to : media query "à partir de" un point de rupture Bootstrap
+// Usage : @include respond-to(lg) { ... }   → @media (min-width: 992px)
+// -----------------------------------------------------------------------------
+@mixin respond-to($breakpoint) {
+  @include media-breakpoint-up($breakpoint) {
+    @content;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// hover-lift : agrandissement + ombre au survol (cartes de films)
+// Uniquement sur les appareils à souris, et désactivé si l'utilisateur
+// demande moins d'animations.
+// -----------------------------------------------------------------------------
+@mixin hover-lift($scale: $card-hover-scale) {
+  transition:
+    transform $transition-duration $ease-out,
+    box-shadow $transition-duration $ease-out,
+    background-color $theme-transition-duration ease;
+
+  @media (hover: hover) {
+    &:hover,
+    &:focus-within {
+      z-index: 2;
+      transform: scale($scale);
+      box-shadow: $shadow-card;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// overlay-gradient : dégradé posé sur une image pour rendre le texte lisible
+// À inclure dans un pseudo-élément (::before / ::after).
+// -----------------------------------------------------------------------------
+@mixin overlay-gradient($direction: to top, $color: $bg-dark, $strength: 1) {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    $direction,
+    rgba($color, $strength) 0%,
+    rgba($color, $strength * 0.6) 40%,
+    rgba($color, 0) 80%
+  );
+}
+
+// -----------------------------------------------------------------------------
+// line-clamp : coupe un texte après N lignes avec des points de suspension
+// -----------------------------------------------------------------------------
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  overflow: hidden;
+}
+
+// -----------------------------------------------------------------------------
+// star-rating : 5 étoiles remplies proportionnellement à la note.
+// La note est passée en HTML via une variable CSS : style="--rating: 4.5"
+// Le dégradé est découpé à la forme du texte (background-clip: text).
+// -----------------------------------------------------------------------------
+@mixin star-rating($size: 1rem, $on: $star-gold, $off: rgba($text-muted, 0.45)) {
+  --percent: calc(var(--rating, 0) / 5 * 100%);
+  display: inline-block;
+  font-size: $size;
+  line-height: 1;
+  letter-spacing: 0.1em;
+
+  &::before {
+    content: "★★★★★";
+    background: linear-gradient(90deg, $on var(--percent), $off var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// button-reset : retire l'apparence native d'un <button>
+// (utile pour un bouton qui doit ressembler à du texte, ex : titre de carte)
+// -----------------------------------------------------------------------------
+@mixin button-reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+}

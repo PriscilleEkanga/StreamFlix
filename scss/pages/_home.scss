@@ -1,0 +1,56 @@
+// =============================================================================
+// PAGES / ACCUEIL
+// Rangées de films et section d'inscription.
+// =============================================================================
+
+// ---- Rangées de films -------------------------------------------------------
+.sf-row {
+  padding-top: $section-spacing * 0.5;
+  padding-bottom: $section-spacing * 0.5;
+
+  // Sur mobile la rangée défile horizontalement (.flex-nowrap +
+  // .overflow-x-auto) : on ajoute l'aimantation carte par carte.
+  &__list {
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: $primary-red transparent;
+
+    > li {
+      scroll-snap-align: start;
+    }
+
+    @include respond-to(sm) {
+      scroll-snap-type: none;
+    }
+  }
+}
+
+// ---- Inscription --------------------------------------------------------------
+.sf-signup__panel {
+  border: 1px solid var(--bs-border-color);
+  border-radius: $card-radius * 2;
+  background:
+    radial-gradient(40rem 25rem at 0% 0%, rgba($primary-red, 0.22), transparent 70%),
+    var(--bs-tertiary-bg);
+}
+
+.sf-signup__title {
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+}
+
+.sf-signup__perks li::before {
+  content: "✓";
+  margin-right: 0.5rem;
+  color: $primary-red;
+  font-weight: 700;
+}
+
+.sf-signup__panel {
+  padding: 1.5rem;
+
+  @include respond-to(md) {
+    padding: 3rem;
+  }
+}

@@ -1,0 +1,86 @@
+// =============================================================================
+// LAYOUT / HERO — film à la une
+// La section porte data-bs-theme="dark" : elle reste sombre (texte blanc
+// sur image) même quand le reste du site est en thème clair.
+// =============================================================================
+
+.sf-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  // 85 % de l'écran, plafonné pour les très grands écrans
+  min-height: min(#{$hero-min-height}, 48rem);
+  padding-top: $header-height + 2rem;
+  padding-bottom: $section-spacing;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: $bg-dark;
+  color: $text-light;
+
+  @include respond-to(lg) {
+    align-items: center;
+  }
+
+  // Image de fond + deux dégradés (bas et gauche) pour la lisibilité
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      // Image assombrie : elle sert d'ambiance, le texte doit primer
+      filter: brightness(0.55) saturate(1.1);
+      transform: scale(1.05);
+    }
+
+    &::before {
+      @include overlay-gradient(to right, $bg-dark, 0.9);
+    }
+
+    &::after {
+      @include overlay-gradient(to top, $bg-dark, 1);
+    }
+  }
+
+  &__kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $text-muted;
+    font-size: $font-size-small;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin-bottom: 0.75rem;
+    font-size: clamp(2.75rem, 1.5rem + 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    text-shadow: 0 4px 24px rgba(#000, 0.6);
+  }
+
+  &__desc {
+    max-width: 36rem;
+    color: rgba($text-light, 0.9);
+    text-shadow: 0 2px 8px rgba(#000, 0.6);
+  }
+
+  // Affiche nette à droite (desktop), légèrement inclinée
+  &__poster {
+    width: clamp(13rem, 20vw, 19rem);
+    border-radius: $card-radius;
+    box-shadow: 0 30px 60px -10px rgba(#000, 0.7);
+    transform: perspective(1200px) rotateY(-10deg);
+    transition: transform 0.6s $ease-out;
+
+    &:hover {
+      transform: perspective(1200px) rotateY(0) scale(1.02);
+    }
+  }
+}

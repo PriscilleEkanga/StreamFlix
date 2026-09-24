@@ -1,0 +1,28 @@
+// =============================================================================
+// BASE / TYPOGRAPHIE
+// La police et les graisses de base sont réglées dans les variables
+// Bootstrap ($font-family-sans-serif, $headings-font-weight).
+// =============================================================================
+
+body {
+  font-size: $font-size-base;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+// Titre de rangée ("Tendances actuelles"...) : taille fluide avec clamp()
+.section-title {
+  margin-bottom: 1rem;
+  font-size: clamp(1.15rem, 0.95rem + 1vw, $font-size-large);
+  font-weight: 700;
+}
+
+.text-small {
+  font-size: $font-size-small;
+}

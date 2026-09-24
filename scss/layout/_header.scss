@@ -1,0 +1,110 @@
+// =============================================================================
+// LAYOUT / HEADER
+// Navbar Bootstrap fixée en haut, transparente au-dessus du hero puis
+// opaque dès que l'on fait défiler la page (classe .is-scrolled ajoutée
+// par script.js), comme sur Netflix.
+// =============================================================================
+
+.sf-navbar {
+  min-height: $header-height;
+  background: linear-gradient(to bottom, rgba(#000, 0.8), rgba(#000, 0));
+  transition:
+    background-color $transition-duration ease,
+    box-shadow $transition-duration ease;
+
+  &.is-scrolled,
+  // Menu mobile ouvert : fond opaque pour que les liens restent lisibles
+  &:has(.navbar-collapse.show),
+  &:has(.navbar-collapse.collapsing) {
+    background-color: $bg-dark;
+    box-shadow: 0 2px 12px rgba(#000, 0.5);
+  }
+
+  .navbar-brand img {
+    width: auto;
+    height: 1.75rem;
+    transition: transform $transition-duration $ease-out;
+
+    @include respond-to(lg) {
+      height: 2.25rem;
+    }
+  }
+
+  .navbar-brand:hover img {
+    transform: scale(1.05);
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba($primary-red, 0.5);
+  }
+}
+
+// ---- Recherche ----------------------------------------------------------------
+.sf-search {
+  .form-control {
+    border-color: rgba($text-light, 0.35);
+    background-color: rgba(#000, 0.55);
+    color: $text-light;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+
+    @include respond-to(lg) {
+      width: 11rem;
+      transition: width $transition-duration $ease-out;
+
+      &:focus {
+        width: 15rem;
+      }
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    border-color: rgba($text-light, 0.35);
+  }
+}
+
+// ---- Bouton de thème et avatar -------------------------------------------------
+.sf-theme-toggle {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.sf-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: $btn-border-radius;
+  background: linear-gradient(135deg, $primary-red, #ff8a00);
+  color: $text-light;
+  font-weight: 700;
+  transition: transform $transition-duration $ease-out;
+}
+
+.sf-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: $text-light;
+
+  &:hover .sf-avatar,
+  &[aria-expanded="true"] .sf-avatar {
+    transform: scale(1.08);
+  }
+}
+
+// Zone recherche / thème / profil : espacée du menu en mobile uniquement
+.sf-navbar__tools {
+  padding: 0.5rem 0 1rem;
+
+  @include respond-to(lg) {
+    padding: 0;
+  }
+}

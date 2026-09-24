@@ -1,0 +1,59 @@
+// =============================================================================
+// COMPONENTS / NAVIGATION
+// Liens de la navbar (soulignement animé) et menu déroulant du profil.
+// Le lien actif est mis à jour par le composant ScrollSpy de Bootstrap.
+// =============================================================================
+
+.sf-navbar .nav-link {
+  position: relative;
+  font-weight: 500;
+
+  // Soulignement rouge qui se déploie de gauche à droite
+  &::after {
+    content: "";
+    position: absolute;
+    right: var(--bs-navbar-nav-link-padding-x, 0);
+    bottom: 0.3rem;
+    left: var(--bs-navbar-nav-link-padding-x, 0);
+    height: 2px;
+    background-color: $primary-red;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform $transition-duration $ease-out;
+  }
+
+  &:hover::after,
+  &.active::after {
+    transform: scaleX(1);
+  }
+
+  &.active {
+    font-weight: 700;
+  }
+}
+
+// ---- Menu déroulant du profil ---------------------------------------------
+.sf-navbar .dropdown-menu {
+  --bs-dropdown-bg: #{rgba($bg-dark, 0.95)};
+  --bs-dropdown-border-color: #{rgba($text-light, 0.15)};
+  --bs-dropdown-link-hover-bg: #{rgba($text-light, 0.08)};
+  --bs-dropdown-link-active-bg: #{$primary-red};
+  animation: sf-dropdown-in 0.2s $ease-out;
+}
+
+.sf-navbar .dropdown-item {
+  transition:
+    background-color $transition-duration ease,
+    padding-left $transition-duration $ease-out;
+
+  &:hover {
+    padding-left: 1.4rem;
+  }
+}
+
+@keyframes sf-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}

@@ -1,449 +1,179 @@
 /* ==========================================================================
    StreamFlix — script.js
-   Amélioration progressive : la page reste lisible et navigable sans
-   JavaScript. Le script ajoute ce que le CSS ne peut pas faire seul
-   (mémoriser un choix, mesurer des hauteurs, mettre à jour l'ARIA) et
-   fournit des solutions de repli aux navigateurs qui ne gèrent pas encore
-   les scroll-driven animations.
-
-   1. Thèmes (défi 2)
-   2. Menu mobile et menu profil
-   3. Header au scroll + parallax du hero (fallbacks, défis 3 et 4)
-   4. Scroll-spy, indicateur de navigation, fil d'Ariane (défi 3)
-   5. Grille masonry avec animation FLIP (défi 1)
-   6. Onglets de filtrage (défi 3)
-   7. Apparition en cascade + skeleton screens (défi 4)
-   8. Petits comportements : Ma Liste, confirmation du mot de passe
+   Les comportements de base (menu hamburger, menu profil, modale, suivi de
+   la section visible) sont fournis par Bootstrap via les attributs
+   data-bs-*. Ce fichier ajoute :
+   1. Navbar opaque au scroll
+   2. Mise à jour d'aria-current avec le ScrollSpy + fermeture du menu mobile
+   3. Tooltips
+   4. Modale de détails remplie selon le film cliqué
+   5. Thème sombre / clair mémorisé
+   6. Boutons "Ma Liste"
+   7. Validation du formulaire d'inscription
    ========================================================================== */
 
 (() => {
   'use strict';
 
-  const root = document.documentElement;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
-
-  /* ------------------------------------------------------------------------
-     1. THÈMES
-     Le thème enregistré est déjà appliqué par le script inline du <head>
-     (avant le premier rendu). Ici on synchronise les boutons radio et on
-     mémorise chaque nouveau choix.
-     ------------------------------------------------------------------------ */
-  const THEME_KEY = 'streamflix-theme';
-
-  function initThemes() {
-    const radios = document.querySelectorAll('input[name="theme"]');
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-
-    const updateMetaColor = () => {
-      const color = getComputedStyle(root).getPropertyValue('--theme-color').trim();
-      if (metaThemeColor && color) metaThemeColor.setAttribute('content', color);
-    };
-
-    const current = root.getAttribute('data-theme') || 'dark';
-    radios.forEach((radio) => {
-      radio.checked = radio.value === current;
-      radio.addEventListener('change', () => {
-        if (!radio.checked) return;
-        root.setAttribute('data-theme', radio.value);
-        try {
-          localStorage.setItem(THEME_KEY, radio.value);
-        } catch (e) { /* navigation privée : le thème ne sera pas mémorisé */ }
-        updateMetaColor();
-      });
-    });
-    updateMetaColor();
-  }
-
-  /* ------------------------------------------------------------------------
-     2. MENU MOBILE ET MENU PROFIL
-     ------------------------------------------------------------------------ */
-  function initMobileNav() {
-    const toggle = document.querySelector('.nav-toggle');
-    const menu = document.getElementById('main-menu');
-    if (!toggle || !menu) return;
-    const label = toggle.querySelector('.sr-only');
-
-    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
-    const setOpen = (open) => {
-      toggle.setAttribute('aria-expanded', String(open));
-      label.textContent = open ? 'Fermer le menu de navigation' : 'Ouvrir le menu de navigation';
-    };
-
-    toggle.addEventListener('click', () => setOpen(!isOpen()));
-    menu.addEventListener('click', (event) => {
-      if (event.target.closest('a')) setOpen(false);
-    });
-    document.addEventListener('click', (event) => {
-      if (isOpen() && !event.target.closest('.main-nav')) setOpen(false);
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && isOpen()) {
-        setOpen(false);
-        toggle.focus();
-      }
-    });
-  }
-
-  function initProfileMenu() {
-    const dropdown = document.querySelector('.profile-dropdown');
-    if (!dropdown) return;
-
-    document.addEventListener('click', (event) => {
-      if (dropdown.open && !dropdown.contains(event.target)) dropdown.open = false;
-    });
-    dropdown.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && dropdown.open) {
-        dropdown.open = false;
-        dropdown.querySelector('summary').focus();
-      }
-    });
-  }
-
-  /* ------------------------------------------------------------------------
-     3. HEADER AU SCROLL + PARALLAX (fallbacks)
-     Chrome/Edge/Safari récents font tout en CSS (animation-timeline).
-     Pour les autres, un seul écouteur de scroll, limité à une exécution
-     par frame avec requestAnimationFrame.
-     ------------------------------------------------------------------------ */
-  function initScrollEffects() {
-    const header = document.querySelector('.site-header');
-    const hero = document.querySelector('.hero');
-    const needsHeaderFallback = !CSS.supports('animation-timeline: scroll()');
-    const needsParallaxFallback = !CSS.supports('animation-timeline: view()');
-
-    // Hauteur du header exposée au CSS (scroll-padding-top des ancres)
-    const measureHeader = () => {
-      root.style.setProperty('--header-h', `${header.offsetHeight}px`);
-    };
-    measureHeader();
-    window.addEventListener('resize', measureHeader);
-
-    if (!needsHeaderFallback && !needsParallaxFallback) return;
-
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const y = window.scrollY;
-      if (needsHeaderFallback) header.classList.toggle('is-scrolled', y > 40);
-      if (needsParallaxFallback && hero && !reducedMotion.matches) {
-        const progress = Math.min(1, Math.max(0, y / hero.offsetHeight));
-        hero.style.setProperty('--hero-progress', progress.toFixed(3));
-      }
-    };
-
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    }, { passive: true });
-    update();
-  }
-
-  /* ------------------------------------------------------------------------
-     4. SCROLL-SPY, INDICATEUR ET FIL D'ARIANE
-     IntersectionObserver surveille une fine bande au milieu de l'écran :
-     la section qui la traverse devient la section "courante".
-     Chaque section déclare dans son HTML le lien de menu associé (data-nav)
-     et sa rubrique (data-crumb) ; le fil d'Ariane est construit à partir de
-     ces attributs et du titre h2 de la section.
-     ------------------------------------------------------------------------ */
-  const breadcrumb = {
-    list: document.getElementById('breadcrumb-list'),
-    key: '',
-    current: null,
+  // Données affichées dans la modale "détails" (une entrée par film)
+  const MOVIES = {
+    'inception': {
+      title: 'Inception', year: 2010, duration: '2h28', rating: 4.5,
+      genres: ['Sci-Fi', 'Thriller'], director: 'Christopher Nolan',
+      synopsis: "Un voleur qui s'infiltre dans les rêves des autres pour voler leurs secrets découvre qu'il doit réaliser l'impossible : planter une idée plutôt que de la voler.",
+    },
+    'dark-knight': {
+      title: 'The Dark Knight', year: 2008, duration: '2h32', rating: 4.8,
+      genres: ['Action', 'Crime', 'Drama'], director: 'Christopher Nolan',
+      synopsis: "Batman, le lieutenant Gordon et le procureur Harvey Dent s'allient pour démanteler la pègre de Gotham. Mais un criminel imprévisible, le Joker, entraîne la ville dans le chaos.",
+    },
+    'interstellar': {
+      title: 'Interstellar', year: 2014, duration: '2h49', rating: 4.7,
+      genres: ['Sci-Fi', 'Drama'], director: 'Christopher Nolan',
+      synopsis: "Alors que la Terre se meurt, un ancien pilote rejoint une expédition qui traverse un trou de ver à la recherche d'une nouvelle planète habitable.",
+    },
+    'pulp-fiction': {
+      title: 'Pulp Fiction', year: 1994, duration: '2h34', rating: 4.6,
+      genres: ['Crime', 'Drama'], director: 'Quentin Tarantino',
+      synopsis: "Deux tueurs à gages, un boxeur, la femme d'un gangster et deux braqueurs : des histoires croisées dans le Los Angeles des bas-fonds.",
+    },
+    'matrix': {
+      title: 'The Matrix', year: 1999, duration: '2h16', rating: 4.5,
+      genres: ['Action', 'Sci-Fi'], director: 'Lana et Lilly Wachowski',
+      synopsis: "Un hacker découvre que le monde qu'il connaît n'est qu'une simulation, et qu'il pourrait être celui qui libérera l'humanité.",
+    },
+    'forrest-gump': {
+      title: 'Forrest Gump', year: 1994, duration: '2h22', rating: 4.4,
+      genres: ['Drama', 'Romance'], director: 'Robert Zemeckis',
+      synopsis: "Assis sur un banc, Forrest raconte sa vie : une traversée de trente ans d'histoire américaine, portée par sa simplicité et son amour pour Jenny.",
+    },
   };
 
-  function moveIndicator(container, target) {
-    if (!container || !target) return;
-    container.style.setProperty('--indicator-x', `${target.offsetLeft}px`);
-    container.style.setProperty('--indicator-w', `${target.offsetWidth}px`);
-  }
+  const root = document.documentElement;
 
-  function renderBreadcrumb(section) {
-    if (!breadcrumb.list || !section) return;
-    breadcrumb.current = section;
+  /* 1. NAVBAR OPAQUE AU SCROLL ------------------------------------------- */
+  const navbar = document.querySelector('.sf-navbar');
+  const updateNavbar = () => navbar.classList.toggle('is-scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', updateNavbar, { passive: true });
+  updateNavbar();
 
-    const trail = [{ label: 'StreamFlix', href: '#main-content' }];
-    const crumb = section.dataset.crumb;
-    const heading = section.querySelector('h2');
-    const leaf = section.dataset.crumbLeaf || (heading && heading.textContent.trim());
+  /* 2. SCROLLSPY ET MENU MOBILE ---------------------------------------------
+     Bootstrap ajoute la classe .active au lien de la section visible ;
+     on synchronise aria-current pour les lecteurs d'écran. */
+  const menu = document.getElementById('main-menu');
+  const navLinks = menu.querySelectorAll('.nav-link');
 
-    if (leaf && leaf !== crumb) {
-      trail.push({ label: crumb, href: section.dataset.nav });
-      trail.push({ label: leaf });
-    } else {
-      trail.push({ label: crumb });
-    }
+  window.addEventListener('activate.bs.scrollspy', () => {
+    navLinks.forEach((link) => {
+      if (link.classList.contains('active')) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  });
 
-    // On ne reconstruit la liste que si le chemin a réellement changé
-    const key = trail.map((item) => item.label).join('>');
-    if (key === breadcrumb.key) return;
-    breadcrumb.key = key;
-
-    const items = trail.map((item) => {
-      const li = document.createElement('li');
-      if (item.href) {
-        const a = document.createElement('a');
-        a.href = item.href;
-        a.textContent = item.label;
-        li.append(a);
-      } else {
-        const span = document.createElement('span');
-        span.setAttribute('aria-current', 'location');
-        span.textContent = item.label;
-        li.append(span);
+  // Sur mobile, le menu se referme après un clic sur un lien
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (menu.classList.contains('show')) {
+        bootstrap.Collapse.getOrCreateInstance(menu).hide();
       }
+    });
+  });
+
+  /* 3. TOOLTIPS (désactivés par défaut dans Bootstrap) --------------------- */
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+    new bootstrap.Tooltip(el);
+  });
+
+  /* 4. MODALE DE DÉTAILS ----------------------------------------------------
+     L'événement show.bs.modal fournit le bouton cliqué (relatedTarget),
+     qui porte l'identifiant du film dans data-movie. */
+  const modal = document.getElementById('movie-modal');
+
+  modal.addEventListener('show.bs.modal', (event) => {
+    const movie = MOVIES[event.relatedTarget?.dataset.movie];
+    if (!movie) return;
+    const id = event.relatedTarget.dataset.movie;
+    const ratingText = String(movie.rating).replace('.', ',');
+
+    modal.querySelector('#movie-modal-title').textContent = movie.title;
+    modal.querySelector('#movie-modal-meta').textContent = `${movie.year} · ${movie.duration}`;
+    modal.querySelector('#movie-modal-synopsis').textContent = movie.synopsis;
+    modal.querySelector('#movie-modal-director').textContent = `Réalisé par ${movie.director}`;
+
+    const rating = modal.querySelector('#movie-modal-rating');
+    rating.style.setProperty('--rating', movie.rating);
+    rating.setAttribute('aria-label', `Note : ${ratingText} sur 5`);
+
+    const poster = modal.querySelector('#movie-modal-poster');
+    poster.src = `images/films/${id}-400.jpg`;
+    poster.alt = `Affiche du film ${movie.title}`;
+
+    const genres = movie.genres.map((genre) => {
+      const li = document.createElement('li');
+      li.className = 'badge rounded-pill sf-badge';
+      li.textContent = genre;
       return li;
     });
-    breadcrumb.list.replaceChildren(...items);
-  }
+    modal.querySelector('#movie-modal-genres').replaceChildren(...genres);
+  });
 
-  function initScrollSpy() {
-    const navList = document.querySelector('.nav-list');
-    const links = [...document.querySelectorAll('.nav-list a')];
-    const sections = [...document.querySelectorAll('main [data-nav]')];
-    if (!navList || !sections.length) return;
+  /* 5. THÈME SOMBRE / CLAIR --------------------------------------------------
+     Bootstrap 5.3 change toutes ses couleurs selon data-bs-theme. */
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeTooltip = bootstrap.Tooltip.getInstance(themeToggle);
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
 
-    const setActive = (section) => {
-      const href = section.dataset.nav;
-      links.forEach((link) => {
-        if (link.getAttribute('href') === href) link.setAttribute('aria-current', 'true');
-        else link.removeAttribute('aria-current');
-      });
-      moveIndicator(navList, navList.querySelector('[aria-current]'));
-      renderBreadcrumb(section);
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setActive(entry.target);
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach((section) => observer.observe(section));
-
-    // Les largeurs des liens changent avec la police et le point de rupture
-    const refresh = () => moveIndicator(navList, navList.querySelector('[aria-current]'));
-    window.addEventListener('resize', refresh);
-    document.fonts.ready.then(refresh);
-    refresh();
-  }
-
-  /* ------------------------------------------------------------------------
-     5. GRILLE MASONRY + ANIMATION FLIP
-     Simulation : chaque carte occupe "span N" rangées de 8px, N étant
-     calculé d'après sa hauteur réelle.
-     Animation de repositionnement (technique FLIP : First, Last, Invert,
-     Play) : on mémorise la position de chaque carte, on laisse la grille se
-     réorganiser, puis on anime chaque carte de son ancienne position vers la
-     nouvelle avec un simple transform (fluide, calculé par le GPU).
-     ------------------------------------------------------------------------ */
-  function createMasonry(grid) {
-    const items = [...grid.children];
-    const nativeMasonry = CSS.supports('grid-template-rows', 'masonry');
-    const positions = new Map();
-    let initialized = false;
-
-    function setSpans() {
-      if (nativeMasonry) return;
-      const rowHeight = parseFloat(getComputedStyle(grid).gridAutoRows) || 8;
-      // Toutes les lectures d'abord, puis toutes les écritures : évite de
-      // forcer un recalcul de la mise en page à chaque carte.
-      const heights = items.map((item) => (item.hidden ? 0 : item.offsetHeight));
-      items.forEach((item, i) => {
-        if (!item.hidden) item.style.setProperty('--span', Math.ceil(heights[i] / rowHeight));
-      });
-    }
-
-    function layout() {
-      setSpans();
-      const animate = initialized && !reducedMotion.matches;
-
-      items.forEach((item) => {
-        if (item.hidden) {
-          positions.delete(item);
-          return;
-        }
-        const last = { x: item.offsetLeft, y: item.offsetTop };
-        const first = positions.get(item);
-        positions.set(item, last);
-        if (!animate) return;
-
-        // Carte qui réapparaît (filtre) : fondu + léger zoom
-        if (!first) {
-          item.animate(
-            [{ opacity: 0, transform: 'scale(0.92)' }, { opacity: 1, transform: 'none' }],
-            { duration: 400, easing: EASE_OUT }
-          );
-          return;
-        }
-
-        const dx = first.x - last.x;
-        const dy = first.y - last.y;
-        if (!dx && !dy) return;
-
-        // Si une animation est déjà en cours (redimensionnement continu),
-        // on repart de la position affichée pour éviter tout saut.
-        const current = new DOMMatrixReadOnly(getComputedStyle(item).transform);
-        item.getAnimations().forEach((animation) => animation.cancel());
-        item.animate(
-          [
-            { transform: `translate(${dx + current.m41}px, ${dy + current.m42}px)` },
-            { transform: 'translate(0, 0)' },
-          ],
-          { duration: 500, easing: EASE_OUT }
-        );
-      });
-      initialized = true;
-    }
-
-    // On observe les cartes (et non la grille) : leur largeur change à chaque
-    // changement de colonnes, leur hauteur au chargement des polices.
-    // Le recalcul est reporté à la frame suivante (et regroupé) : modifier la
-    // grille pendant le callback peut redimensionner d'autres cartes et
-    // déclencher l'erreur "ResizeObserver loop".
-    let frame = 0;
-    const observer = new ResizeObserver(() => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(layout);
+  const applyTheme = (theme) => {
+    const isLight = theme === 'light';
+    root.setAttribute('data-bs-theme', theme);
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+    themeToggle.querySelector('.sf-theme-icon').textContent = isLight ? '☾' : '☀';
+    themeMeta.setAttribute('content', isLight ? '#f5f5f1' : '#141414');
+    themeTooltip?.setContent({
+      '.tooltip-inner': isLight ? 'Passer au thème sombre' : 'Passer au thème clair',
     });
-    items.forEach((item) => observer.observe(item.firstElementChild));
+  };
 
-    return { items, layout };
-  }
+  applyTheme(root.getAttribute('data-bs-theme') || 'dark');
 
-  /* ------------------------------------------------------------------------
-     6. ONGLETS DE FILTRAGE
-     Motif ARIA "tabs" : flèches gauche/droite, Début/Fin, un seul onglet
-     dans l'ordre de tabulation (roving tabindex).
-     ------------------------------------------------------------------------ */
-  function initTabs(masonry) {
-    const tablist = document.querySelector('.tabs');
-    const panel = document.getElementById('catalogue-panel');
-    const status = document.getElementById('catalogue-status');
-    const section = document.getElementById('catalogue');
-    if (!tablist || !panel) return;
-    const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+  themeToggle.addEventListener('click', () => {
+    const next = root.getAttribute('data-bs-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    try {
+      localStorage.setItem('streamflix-theme', next);
+    } catch (e) { /* navigation privée : choix non mémorisé */ }
+  });
 
-    function select(tab, moveFocus) {
-      tabs.forEach((t) => {
-        const selected = t === tab;
-        t.setAttribute('aria-selected', String(selected));
-        t.tabIndex = selected ? 0 : -1;
+  /* 6. BOUTONS "MA LISTE" ----------------------------------------------------- */
+  document.querySelectorAll('.sf-list-toggle').forEach((button) => {
+    button.addEventListener('click', () => {
+      const added = button.getAttribute('aria-pressed') !== 'true';
+      button.setAttribute('aria-pressed', String(added));
+      button.querySelector('.sf-list-icon').textContent = added ? '✓' : '+';
+      bootstrap.Tooltip.getInstance(button)?.setContent({
+        '.tooltip-inner': added ? 'Retirer de ma liste' : 'Ajouter à ma liste',
       });
-      if (moveFocus) tab.focus();
-      panel.setAttribute('aria-labelledby', tab.id);
-      moveIndicator(tablist, tab);
-
-      const filter = tab.dataset.filter;
-      let count = 0;
-      masonry.items.forEach((item) => {
-        const visible = filter === 'all' || item.dataset.genres.split(' ').includes(filter);
-        item.hidden = !visible;
-        if (visible) count += 1;
-      });
-      masonry.layout();
-
-      status.textContent = `${count} titre${count > 1 ? 's' : ''} affiché${count > 1 ? 's' : ''}`;
-      section.dataset.crumbLeaf = filter === 'all' ? '' : tab.textContent.trim();
-      if (breadcrumb.current === section) renderBreadcrumb(section);
-    }
-
-    tablist.addEventListener('click', (event) => {
-      const tab = event.target.closest('[role="tab"]');
-      if (tab) select(tab, false);
     });
+  });
 
-    tablist.addEventListener('keydown', (event) => {
-      const index = tabs.indexOf(document.activeElement);
-      if (index < 0) return;
-      const targets = {
-        ArrowRight: tabs[(index + 1) % tabs.length],
-        ArrowLeft: tabs[(index - 1 + tabs.length) % tabs.length],
-        Home: tabs[0],
-        End: tabs[tabs.length - 1],
-      };
-      const next = targets[event.key];
-      if (!next) return;
+  /* 7. VALIDATION DU FORMULAIRE (modèle Bootstrap .needs-validation) -------- */
+  const form = document.querySelector('.needs-validation');
+  const password = document.getElementById('signup-password');
+  const confirm = document.getElementById('signup-password-confirm');
+
+  const checkPasswords = () => {
+    confirm.setCustomValidity(confirm.value !== password.value ? 'Les mots de passe ne correspondent pas.' : '');
+  };
+  password.addEventListener('input', checkPasswords);
+  confirm.addEventListener('input', checkPasswords);
+
+  form.addEventListener('submit', (event) => {
+    checkPasswords();
+    if (!form.checkValidity()) {
       event.preventDefault();
-      select(next, true);
-    });
-
-    const refresh = () => moveIndicator(tablist, tablist.querySelector('[aria-selected="true"]'));
-    window.addEventListener('resize', refresh);
-    document.fonts.ready.then(refresh);
-    refresh();
-  }
-
-  /* ------------------------------------------------------------------------
-     7. APPARITION EN CASCADE + SKELETON SCREENS
-     ------------------------------------------------------------------------ */
-  function initReveal() {
-    const targets = document.querySelectorAll('.movie-section, .catalogue');
-    if (!('IntersectionObserver' in window)) {
-      targets.forEach((target) => target.classList.add('is-visible'));
-      return;
+      event.stopPropagation();
+      form.querySelector(':invalid')?.focus();
     }
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.15 });
-    targets.forEach((target) => observer.observe(target));
-  }
-
-  function initSkeletons() {
-    document.querySelectorAll('.movie-poster img').forEach((img) => {
-      if (img.complete && img.naturalWidth) return;
-      const poster = img.closest('.movie-poster');
-      poster.classList.add('is-loading');
-      const done = () => poster.classList.remove('is-loading');
-      img.addEventListener('load', done, { once: true });
-      img.addEventListener('error', done, { once: true });
-    });
-  }
-
-  /* ------------------------------------------------------------------------
-     8. PETITS COMPORTEMENTS
-     ------------------------------------------------------------------------ */
-  function initToggleButtons() {
-    document.querySelectorAll('button[aria-pressed]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const pressed = button.getAttribute('aria-pressed') === 'true';
-        button.setAttribute('aria-pressed', String(!pressed));
-      });
-    });
-  }
-
-  function initSignupValidation() {
-    const password = document.getElementById('signup-password');
-    const confirm = document.getElementById('signup-password-confirm');
-    if (!password || !confirm) return;
-    const check = () => {
-      const mismatch = confirm.value && confirm.value !== password.value;
-      confirm.setCustomValidity(mismatch ? 'Les mots de passe ne correspondent pas.' : '');
-    };
-    password.addEventListener('input', check);
-    confirm.addEventListener('input', check);
-  }
-
-  /* ------------------------------------------------------------------------
-     INITIALISATION
-     ------------------------------------------------------------------------ */
-  initThemes();
-  initMobileNav();
-  initProfileMenu();
-  initScrollEffects();
-  initScrollSpy();
-  initSkeletons();
-  initReveal();
-
-  const masonryGrid = document.querySelector('.masonry');
-  if (masonryGrid) initTabs(createMasonry(masonryGrid));
-
-  initToggleButtons();
-  initSignupValidation();
+    form.classList.add('was-validated');
+  });
 })();

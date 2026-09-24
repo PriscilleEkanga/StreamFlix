@@ -1,0 +1,44 @@
+// =============================================================================
+// UTILS / VARIABLES — Charte graphique StreamFlix
+// -----------------------------------------------------------------------------
+// Ce fichier est importé AVANT Bootstrap. Les variables de Bootstrap sont
+// déclarées avec !default : si une variable du même nom existe déjà (ex :
+// $font-size-base), c'est la nôtre qui est conservée.
+// =============================================================================
+
+// ---- Palette StreamFlix -----------------------------------------------------
+$primary-red: #e50914;      // rouge signature (boutons, liens actifs)
+$primary-dark: #221f1f;     // noir chaud (textes du thème clair)
+$secondary-gray: #564d4d;   // gris des boutons secondaires
+$text-light: #ffffff;       // texte sur fond sombre
+$text-muted: #999999;       // texte secondaire (métadonnées)
+$accent-blue: #0071eb;      // accent informatif (badges "Nouveau")
+
+$bg-dark: #141414;          // fond de page du thème sombre (type Netflix)
+$bg-dark-elevated: #1f1f1f; // cartes et panneaux en thème sombre
+$bg-light: #f5f5f1;         // fond de page du thème clair
+$star-gold: #f5c518;        // étoiles de notation
+
+// ---- Typographie ------------------------------------------------------------
+$font-primary: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-secondary: 'Arial', sans-serif;
+
+// Tailles exprimées en rem (1rem = 16px par défaut) plutôt qu'en px :
+// le texte suit ainsi le réglage de taille de police du navigateur.
+$font-size-base: 1rem;       // 16px
+$font-size-large: 1.5rem;    // 24px
+$font-size-small: 0.875rem;  // 14px
+$font-weight-title: 800;
+
+// ---- Mise en page -----------------------------------------------------------
+$header-height: 4.5rem;
+$hero-min-height: 85vh;
+$section-spacing: 2.5rem;
+$card-radius: 0.5rem;
+
+// ---- Animations -------------------------------------------------------------
+$transition-duration: 0.3s;
+$theme-transition-duration: 0.4s;
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+$card-hover-scale: 1.04;
+$shadow-card: 0 12px 30px rgba(0, 0, 0, 0.45);

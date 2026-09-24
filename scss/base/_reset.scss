@@ -1,0 +1,69 @@
+// =============================================================================
+// BASE / RESET
+// Bootstrap fournit déjà "Reboot" (normalisation des navigateurs). Ce fichier
+// n'ajoute que ce qui manque pour StreamFlix.
+// =============================================================================
+
+html {
+  scroll-behavior: smooth;
+  // Les ancres (#tendances...) ne passent pas sous la navbar fixe
+  scroll-padding-top: $header-height;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// Contour de focus bien visible pour la navigation au clavier
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid $primary-red;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background-color: $primary-red;
+  color: $text-light;
+}
+
+// Lien d'évitement : .visually-hidden-focusable (Bootstrap) le cache
+// jusqu'à ce qu'il reçoive le focus ; on le met alors en évidence.
+.skip-link:focus {
+  position: fixed !important;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: $zindex-fixed + 10;
+  padding: 0.5rem 1rem;
+  border-radius: $btn-border-radius;
+  background-color: $primary-red;
+  color: $text-light;
+  font-weight: 700;
+}
+
+// Conteneur pleine largeur avec marges latérales progressives
+// (remplace .px-3 .px-lg-5, dont les variantes responsives ont été retirées)
+.sf-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @include respond-to(md) {
+    padding-inline: 2rem;
+  }
+
+  @include respond-to(xl) {
+    padding-inline: 3.5rem;
+  }
+}

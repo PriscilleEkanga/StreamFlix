@@ -1,0 +1,104 @@
+// =============================================================================
+// COMPONENTS / CARTES DE FILMS (.card Bootstrap personnalisées)
+// Mobile/tablette : affiche verticale + titre dessous.
+// Desktop (lg) : carte horizontale (affiche à gauche, infos à droite)
+// grâce à la grille interne .row / .col-lg-* de la carte.
+// =============================================================================
+
+.sf-movie-card {
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bs-tertiary-bg);
+  @include hover-lift;
+
+  // ---- Affiche -------------------------------------------------------------
+  &__poster {
+    background-color: var(--bs-secondary-bg); // visible pendant le chargement
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s $ease-out;
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover .sf-movie-card__poster img {
+      transform: scale(1.06);
+    }
+  }
+
+  // ---- Contenu -------------------------------------------------------------
+  .card-body {
+    padding: 0.6rem 0.7rem 0.8rem;
+
+    @include respond-to(lg) {
+      padding: $card-spacer-y $card-spacer-x;
+    }
+  }
+
+  .card-title {
+    margin-bottom: 0.25rem;
+    font-size: $font-size-small;
+    @include line-clamp(2);
+
+    @include respond-to(lg) {
+      font-size: 1.1rem;
+    }
+  }
+
+  // Le titre est un bouton qui ouvre la modale de détails.
+  // .stretched-link (Bootstrap) étend sa zone cliquable à toute la carte.
+  &__title-btn {
+    @include button-reset;
+    font-weight: 700;
+    transition: color $transition-duration ease;
+
+    &:hover {
+      color: $primary-red;
+    }
+
+    &:focus-visible {
+      outline: none;
+
+      &::after {
+        outline: 3px solid $primary-red;
+        outline-offset: -3px;
+        border-radius: $card-radius;
+      }
+    }
+  }
+
+  &__meta {
+    color: var(--bs-secondary-color);
+    font-size: 0.8rem;
+
+    @include respond-to(lg) {
+      font-size: $font-size-small;
+    }
+  }
+
+  // Boutons placés au-dessus du lien étendu pour rester cliquables
+  &__actions {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+// ---- Notation en étoiles (bonus) ---------------------------------------------
+.sf-rating {
+  @include star-rating(0.8rem);
+
+  &--lg {
+    font-size: 1.1rem;
+  }
+}
+
+// ---- Badges de genre ---------------------------------------------------------
+.sf-badge {
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  font-weight: 500;
+}

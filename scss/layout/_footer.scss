@@ -1,0 +1,40 @@
+// =============================================================================
+// LAYOUT / FOOTER
+// =============================================================================
+
+.sf-footer {
+  margin-top: $section-spacing;
+  border-top: 1px solid var(--bs-border-color);
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+  font-size: $font-size-small;
+
+  &__logo {
+    width: auto;
+    height: 1.75rem;
+  }
+
+  &__title {
+    margin-bottom: 0.75rem;
+    color: var(--bs-body-color);
+    font-size: $font-size-small;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  // Liens : soulignement qui se dessine de gauche à droite au survol
+  &__link {
+    color: inherit;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition:
+      color $transition-duration ease,
+      background-size $transition-duration $ease-out;
+
+    &:hover {
+      color: var(--bs-body-color);
+      text-decoration: none;
+      background-size: 100% 1px;
+    }
+  }
+}

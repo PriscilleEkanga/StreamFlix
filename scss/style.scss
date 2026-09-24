@@ -1,0 +1,45 @@
+// =============================================================================
+// StreamFlix — fichier principal SASS (architecture 7-1)
+// -----------------------------------------------------------------------------
+// Ce fichier ne contient aucun style : il importe les partials dans l'ordre.
+// Compilation : npm run dev   (surveillance automatique → css/style.css)
+//               npm run build (version minifiée pour la production)
+//
+// 7 dossiers + 1 fichier :
+//   utils/       variables et mixins (ne génèrent aucun CSS seuls)
+//   vendors/     Bootstrap personnalisé
+//   base/        reset et typographie
+//   layout/      grandes zones de la page (header, hero, footer)
+//   components/  éléments réutilisables (boutons, cartes, navigation)
+//   pages/       styles propres à une page (accueil)
+//   themes/      thèmes sombre / clair
+// =============================================================================
+
+// 1. Variables : en premier, car elles configurent Bootstrap
+@import "utils/variables";
+
+// 2. Bootstrap (utilise nos variables)
+@import "vendors/bootstrap-custom";
+
+// 3. Mixins : après Bootstrap, car ils utilisent ses mixins
+@import "utils/mixins";
+
+// 4. Base
+@import "base/reset";
+@import "base/typography";
+
+// 5. Layout
+@import "layout/header";
+@import "layout/hero";
+@import "layout/footer";
+
+// 6. Composants
+@import "components/buttons";
+@import "components/cards";
+@import "components/navigation";
+
+// 7. Pages
+@import "pages/home";
+
+// 8. Thèmes
+@import "themes/theme";
